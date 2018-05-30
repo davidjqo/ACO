@@ -42,7 +42,8 @@ public void init () {
 	CITIES 			= new double[NUMBEROFCITIES][2];
 	PHEROMONES 		= new double[NUMBEROFCITIES][NUMBEROFCITIES];
 	DELTAPHEROMONES = new double[NUMBEROFCITIES][NUMBEROFCITIES];
-	PROBS 			= new double[NUMBEROFCITIES-1][2];
+	PROBS 			= new double[NUMBEROFCITIES][2];
+        //PROBS 			= new double[NUMBEROFCITIES - 1][2];
 	for(int i=0; i<NUMBEROFCITIES; i++) {
 		for (int j=0; j<2; j++) {
 			CITIES[i][j] = -1.0;
@@ -90,41 +91,41 @@ public void printPHEROMONES () {
 	for (int i=0; i<NUMBEROFCITIES; i++) {
 		System.out.print("--------");
 	}
-	cout << endl;
+	System.out.print("\n");
 	for (int i=0; i<NUMBEROFCITIES; i++) {
-		cout << i << " | ";
+		System.out.print( i + " | ");
 		for (int j=0; j<NUMBEROFCITIES; j++) {
 			if (i == j) {
-				printf ("%5s   ", "x");
+				System.out.format("%5s   ", "x");
 				continue;
 			}
 			if (exists(i, j)) {
-				printf ("%7.3f ", PHEROMONES[i][j]);
+				System.out.format("%7.3f ", PHEROMONES[i][j]);
 			}
 			else {
 				if(PHEROMONES[i][j] == 0.0) {
-					printf ("%5.0f   ", PHEROMONES[i][j]);
+					System.out.format("%5.0f   ", PHEROMONES[i][j]);
 				}
 				else {
-					printf ("%7.3f ", PHEROMONES[i][j]);
+					System.out.format("%7.3f ", PHEROMONES[i][j]);
 				}
 			}
 		}
-		cout << endl;
+		System.out.print("\n");
 	}
-	cout << endl;
+	System.out.print("\n");
 }
 
 
-double ACO::distance (int cityi, int cityj) {
+public double distance (int cityi, int cityj) {
 	return (double) 
-		sqrt (pow (CITIES[cityi][0] - CITIES[cityj][0], 2) + 
- 			  pow (CITIES[cityi][1] - CITIES[cityj][1], 2));
+		Math.sqrt (Math.pow (CITIES[cityi][0] - CITIES[cityj][0], 2) + 
+ 			  Math.pow (CITIES[cityi][1] - CITIES[cityj][1], 2));
 }
-bool ACO::exists (int cityi, int cityc) {
+public boolean exists (int cityi, int cityc) {
 	return (GRAPH[cityi][cityc] == 1);
 }
-bool ACO::vizited (int antk, int c) {
+public boolean vizited (int antk, int c) {
 	for (int l=0; l<NUMBEROFCITIES; l++) {
 		if (ROUTES[antk][l] == -1) {
 			break;
@@ -135,16 +136,16 @@ bool ACO::vizited (int antk, int c) {
 	}
 	return false;
 }
-double ACO::PHI (int cityi, int cityj, int antk) {
-	double ETAij = (double) pow (1 / distance (cityi, cityj), BETA);
-	double TAUij = (double) pow (PHEROMONES[cityi][cityj],   ALPHA);
+public double PHI (int cityi, int cityj, int antk) {
+	double ETAij = (double) Math.pow (1 / distance (cityi, cityj), BETA);
+	double TAUij = (double) Math.pow (PHEROMONES[cityi][cityj],   ALPHA);
 
 	double sum = 0.0;
 	for (int c=0; c<NUMBEROFCITIES; c++) {
 		if (exists(cityi, c)) {
 			if (!vizited(antk, c)) {
-				double ETA = (double) pow (1 / distance (cityi, c), BETA);
-				double TAU = (double) pow (PHEROMONES[cityi][c],   ALPHA);
+				double ETA = (double) Math.pow (1 / distance (cityi, c), BETA);
+				double TAU = (double) Math.pow (PHEROMONES[cityi][c],   ALPHA);
 				sum += ETA * TAU;
 			}	
 		}	
@@ -152,7 +153,7 @@ double ACO::PHI (int cityi, int cityj, int antk) {
 	return (ETAij * TAUij) / sum;
 }
 
-double ACO::length (int antk) {
+public double length (int antk) {
 	double sum = 0.0;
 	for (int j=0; j<NUMBEROFCITIES-1; j++) {
 		sum += distance (ROUTES[antk][j], ROUTES[antk][j+1]);	
@@ -160,8 +161,8 @@ double ACO::length (int antk) {
 	return sum;
 }
 
-int ACO::city () {
-	double xi = randoms -> Uniforme();
+public int city () {
+	double xi = randoms.Uniforme();
 	int i = 0;
 	double sum = PROBS[i][0];
 	while (sum < xi) {
@@ -171,7 +172,7 @@ int ACO::city () {
 	return (int) PROBS[i][1];
 }
 
-void ACO::route (int antk) {
+public void route (int antk) {
 	ROUTES[antk][0] = INITIALCITY;
 	for (int i=0; i<NUMBEROFCITIES-1; i++) {		
 		int cityi = ROUTES[antk][i];
@@ -198,7 +199,7 @@ void ACO::route (int antk) {
 		ROUTES[antk][i+1] = city();
 	}
 }
-int ACO::valid (int antk, int iteration) {
+public int valid (int antk, int iteration) {
 	for(int i=0; i<NUMBEROFCITIES-1; i++) {
 		int cityi = ROUTES[antk][i];
 		int cityj = ROUTES[antk][i+1];
@@ -222,50 +223,50 @@ int ACO::valid (int antk, int iteration) {
 	return 0;
 }
 
-void ACO::printGRAPH () {
-	cout << " GRAPH: " << endl;
-	cout << "  | ";
+public void printGRAPH () {
+	System.out.print(" GRAPH: " + "\n");
+	System.out.print( "  | ");
 	for( int i=0; i<NUMBEROFCITIES; i++) {
-		cout << i << " ";
+		System.out.print( i +" ");
 	}
-	cout << endl << "- | ";
+	System.out.print("\n"+"- | ");
 	for (int i=0; i<NUMBEROFCITIES; i++) {
-		cout << "- ";
+		System.out.print("- ");
 	}
-	cout << endl;
+	System.out.print("\n");
 	int count = 0;
 	for (int i=0; i<NUMBEROFCITIES; i++) {
-		cout << i << " | ";
+		System.out.print(i + " | ");
 		for (int j=0; j<NUMBEROFCITIES; j++) {
 			if(i == j) {
-				cout << "x ";	
+				System.out.print("x ");	
 			}
 			else {
-				cout << GRAPH[i][j] << " ";	
+				System.out.print(GRAPH[i][j] +" ");	
 			}
 			if (GRAPH[i][j] == 1) {
 				count++;	
 			}
 		}
-		cout << endl;
+		System.out.print("\n");
 	}
-	cout << endl;
-	cout << "Number of connections: " << count << endl << endl;
+	System.out.print("\n");
+	System.out.print("Number of connections: " + count + "\n" + "\n");
 }
-void ACO::printRESULTS () {
+public void printRESULTS () {
 	BESTLENGTH += distance (BESTROUTE[NUMBEROFCITIES-1], INITIALCITY);
-	cout << " BEST ROUTE:" << endl;
+	System.out.print(" BEST ROUTE:" +"\n");
 	for (int i=0; i<NUMBEROFCITIES; i++) {
-		cout << BESTROUTE[i] << " ";
+		System.out.print(BESTROUTE[i] + " ");
 	}
-	cout << endl << "length: " << BESTLENGTH << endl;
+	System.out.print("\n"+"length: " + BESTLENGTH +"\n");
 	
-	cout << endl << " IDEAL ROUTE:" << endl;
-	cout << "0 7 6 2 4 5 1 3" << endl;
-	cout << "length: 127.509" << endl;
+	System.out.print("\n"+" IDEAL ROUTE:" +"\n");
+	System.out.println("0 7 6 2 4 5 1 3");
+	System.out.println("length: 127.509");
 }
 
-void ACO::updatePHEROMONES () {
+public void updatePHEROMONES () {
 	for (int k=0; k<NUMBEROFANTS; k++) {
 		double rlength = length(k);
 		for (int r=0; r<NUMBEROFCITIES-1; r++) {
@@ -284,15 +285,15 @@ void ACO::updatePHEROMONES () {
 }
 
 
-void ACO::optimize (int ITERATIONS) {
+public void optimize (int ITERATIONS) {
 	for (int iterations=1; iterations<=ITERATIONS; iterations++) {
-		cout << flush;
-		cout << "ITERATION " << iterations << " HAS STARTED!" << endl << endl;
+		//System.out.print(flush);
+		System.out.print("ITERATION " + iterations + " HAS STARTED!" +"\n"+"\n");
 
 		for (int k=0; k<NUMBEROFANTS; k++) {
-			cout << " : ant " << k << " has been released!" << endl;
+			System.out.print(" : ant " + k + " has been released!" + "\n");
 			while (0 != valid(k, iterations)) {
-				cout << "  :: releasing ant " << k << " again!" << endl;
+				System.out.print("  :: releasing ant " + k + " again!" + "\n");
 				for (int i=0; i<NUMBEROFCITIES; i++) {
 					ROUTES[k][i] = -1;	
 				}
@@ -300,11 +301,11 @@ void ACO::optimize (int ITERATIONS) {
 			}
 			
 			for (int i=0; i<NUMBEROFCITIES; i++) {
-				cout << ROUTES[k][i] << " ";	
+				System.out.print(ROUTES[k][i] + " ");	
 			}
-			cout << endl;
+			System.out.print("\n");
 			
-			cout << "  :: route done" << endl;
+			System.out.print("  :: route done" + "\n");
 			double rlength = length(k);
 
 			if (rlength < BESTLENGTH) {
@@ -313,12 +314,12 @@ void ACO::optimize (int ITERATIONS) {
 					BESTROUTE[i] = ROUTES[k][i];
 				}
 			}
-			cout << " : ant " << k << " has ended!" << endl;				
+			System.out.print(" : ant " + k + " has ended!" + "\n");				
 		}		
 
-		cout << endl << "updating PHEROMONES . . .";
+		System.out.print("\n"+"updating PHEROMONES . . .");
 		updatePHEROMONES ();
-		cout << " done!" << endl << endl;
+		System.out.print(" done!" + "\n" + "\n");
 		printPHEROMONES ();
 		
 		for (int i=0; i<NUMBEROFANTS; i++) {
@@ -327,12 +328,73 @@ void ACO::optimize (int ITERATIONS) {
 			}
 		}
 
-		cout << endl << "ITERATION " << iterations << " HAS ENDED!" << endl << endl;
+		System.out.print("\n"+"ITERATION " + iterations + " HAS ENDED!" + "\n" + "\n");
 	}
+}
 
 
     public static void main(String[] args) {
-        // TODO code application logic here
+    
+        int ITERATIONS = 5;
+
+        int NUMBEROFANTS = 4;
+        int NUMBEROFCITIES = 8;
+
+        // if (ALPHA == 0) { stochastic search & sub-optimal route }
+        double ALPHA = 0.5;
+        // if (BETA  == 0) { sub-optimal route }
+        double BETA = 0.8;
+        // Estimation of the suspected best route.
+        double Q = 80;
+        // Pheromones evaporation. 
+        double RO = 0.2;
+        // Maximum pheromone random number.
+        int TAUMAX = 2;
+
+        int INITIALCITY = 0;
+
+        ACO ANTS = new ACO (NUMBEROFANTS, NUMBEROFCITIES, 
+			 			ALPHA, BETA, Q, RO, TAUMAX,
+			 			INITIALCITY);
+
+	ANTS.init();
+
+	ANTS.connectCITIES (0, 1);
+	ANTS.connectCITIES (0, 2);
+	ANTS.connectCITIES (0, 3);
+	ANTS.connectCITIES (0, 7);
+	ANTS.connectCITIES (1, 3);
+	ANTS.connectCITIES (1, 5);
+	ANTS.connectCITIES (1, 7);
+	ANTS.connectCITIES (2, 4);
+	ANTS.connectCITIES (2, 5);
+	ANTS.connectCITIES (2, 6);
+	ANTS.connectCITIES (4, 3);
+	ANTS.connectCITIES (4, 5);
+	ANTS.connectCITIES (4, 7);
+	ANTS.connectCITIES (6, 7);
+	/* ANTS -> connectCITIES(8, 2);
+	ANTS -> connectCITIES(8, 6);
+	ANTS -> connectCITIES(8, 7); */
+
+	ANTS.setCITYPOSITION (0,  1,  1);
+	ANTS.setCITYPOSITION (1, 10, 10);
+	ANTS.setCITYPOSITION (2, 20, 10);
+	ANTS.setCITYPOSITION (3, 10, 30);
+	ANTS.setCITYPOSITION (4, 15,  5);
+	ANTS.setCITYPOSITION (5, 10,  1);
+	ANTS.setCITYPOSITION (6, 20, 20);
+	ANTS.setCITYPOSITION (7, 20, 30);
+	// ANTS -> setCITYPOSITION(8, 26, 20);
+
+	ANTS.printGRAPH ();
+
+	ANTS.printPHEROMONES ();
+
+	ANTS.optimize (ITERATIONS);
+
+	ANTS.printRESULTS ();
+
     }
     
 }
